@@ -61,8 +61,8 @@ export const startServer = () => {
     });
   });
 
-  const PORT = getEnvVar(ENV_VARS.PORT, 3000);
-  app.listen(PORT, () => {
+  const PORT = getEnvVar(ENV_VARS.PORT || 3000);
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running in ${PORT} port!`);
   });
 };
