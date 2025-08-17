@@ -1,12 +1,17 @@
-import mongoose from 'mongoose';
+import mongoose, { version } from 'mongoose';
 import { getEnvVar } from '../utils/getEnvVar';
+import { ENV_VARS } from '../constants/envVars';
 
-export const initMongoDB = async () => {
+const clientOptions = {
+    serverApi: { version: '1', strict: true, deprecationErrors: true },
+};
+
+export const initMongoDBConnection = async () => {
     try {
-        const user = getEnvVar('MONGODB_USER');
-        const pwd = getEnvVar('MONGODB_PASSWORD');
-        const url = getEnvVar('MONGODB_URL');
-        const db = getEnvVar('VONGODB_DB');
+        const user = getEnvVar('ENV_VARS.MONGODB_USER');
+        const pwd = getEnvVar('ENV_VARS.MONGODB_PASSWORD');
+        const url = getEnvVar('ENV_VARS.MONGODB_URL');
+        const db = getEnvVar('ENV_VARS.VONGODB_DB');
 
         await mongoose.connect(`mongodb+srv://${user}:${pwd}@${url}/${db}?retryWrites=true&w=majority`);
             
