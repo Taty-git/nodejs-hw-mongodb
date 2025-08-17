@@ -7,17 +7,21 @@ const clientOptions = {
 };
 
 export const initMongoDBConnection = async () => {
-    try {
-        const user = getEnvVar(ENV_VARS.MONGODB_USER);
-        const pwd = getEnvVar(ENV_VARS.MONGODB_PASSWORD);
-        const url = getEnvVar(ENV_VARS.MONGODB_URL);
-        const db = getEnvVar(ENV_VARS.MONGODB_DB);
+    const user = getEnvVar(ENV_VARS.MONGO_DB_USER);
+    const password = getEnvVar(ENV_VARS.MONGO_DB_PASSWORD);
+    const host = getEnvVar(ENV_VARS.MONGO_DB_HOST);
+    const db = getEnvVar(ENV_VARS.MONGO_DB_DATABASE);
 
-        await mongoose.connect(`mongodb+srv://${user}:${pwd}@${url}/${db}?retryWrites=true&w=majority`);
-            
-    console.log('Mongo connection successfully established!');
-  } catch (e) {
-    console.log('Error while setting up mongo connection', e);
-    throw e;
-  }
+    const uri = `mongodb+srv://${user}:${password}@${host}/${db}?retryWrites=true&w=majority&appName=Cluster0`;
+
+    try {
+        await mongoose.connect(uri, clientOptions);
+        await mongoose.connection.db.admin().command({ ping: 1 });
+        console.log(
+        'Pinged your deployment. You successfully connected to MongoDB!',
+        );
+    } catch (err) {
+        console.error('Failed to connect to Mongo DB', err);
+        process.exit(1);
+    }
 };
