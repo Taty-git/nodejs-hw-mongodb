@@ -11,7 +11,7 @@ export const initMongoDBConnection = async () => {
         const user = getEnvVar(ENV_VARS.MONGODB_USER);
         const pwd = getEnvVar(ENV_VARS.MONGODB_PASSWORD);
         const url = getEnvVar(ENV_VARS.MONGODB_URL);
-        const db = getEnvVar(ENV_VARS.VONGODB_DB);
+        const db = getEnvVar(ENV_VARS.MONGODB_DB);
 
         await mongoose.connect(`mongodb+srv://${user}:${pwd}@${url}/${db}?retryWrites=true&w=majority`);
             
