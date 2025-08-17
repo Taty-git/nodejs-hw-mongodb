@@ -1,68 +1,70 @@
 import express from 'express';
-import crypto from 'node:crypto';
+import dotenv from 'dotenv';
 import pino from 'pino-http';
 import cors from 'cors';
 import { getEnvVar } from './utils/getEnvVar.js';
-import { ENV_VARS } from './constants/envVars.js';
-import { getStudentById, getStudents } from './service/students.js';
+import { getAllContacts, getContactById } from './services/students.js';
+
+dotenv.config();
+const PORT = Number(getEnvVar('PORT', '3000'));
 
 export const startServer = () => {
   const app = express();
 
-  // middleware
-  app.use([
-    (req, res, next) => {
-      req.id = crypto.randomUUID();
-      next();
-    },
-    pino(),
-    cors(),
-  ]);
+  app.use(express.json());
+  app.use(cors());
 
-  app.get('/students', async (req, res) => {
-    const students = await getStudents();
-    res.json({
+  app.use(
+    pino({
+      transport: {
+        target: 'pino-pretty',
+      },
+    }),
+  );
+
+  app.get('/contacts', async (req, res) => {
+    const contacts = await getAllContacts();
+    res.status(200).json({
       status: 200,
-      message: 'Successfully found students!',
-      data: students,
+      message: 'Successfully found contacts!',
+      data: contacts,
     });
   });
 
-  app.get('/students/:studentId', async (req, res) => {
-    const { studentId } = req.params;
-    const student = await getStudentById(studentId);
+  app.get('/contacts/:contactId', async (req, res, next) => {
+    const { contactId } = req.params;
+    const contact = await getContactById(contactId);
 
-    if (!student) {
-      return res.status(404).json({
-        status: 404,
-        message: `Student with ${studentId} not found!`,
+    // Відповідь, якщо контакт не знайдено
+    if (!contact) {
+      res.status(404).json({
+        message: 'Contact not found',
       });
+      return;
     }
 
-    res.json({
+    // Відповідь, якщо контакт знайдено
+    res.status(200).json({
       status: 200,
-      message: `Successfully found student with id ${studentId}!`,
-      data: student,
+      message: `Successfully found contact with id ${contactId}`,
+      data: contact,
     });
   });
 
-  app.use((req, res) => {
+  app.use((req, res, next) => {
     res.status(404).json({
-      message: 'Route not found!',
-      status: 404,
+      message: 'Not found',
     });
   });
 
-  app.use('/', (err, req, res, next) => {
+  app.use((err, req, res, next) => {
     res.status(500).json({
-      status: 500,
-      message: 'Oops error happened in application!',
+      message: 'Something went wrong',
       error: err.message,
     });
   });
 
-  const PORT = getEnvVar(ENV_VARS.PORT || 3000);
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server is running in ${PORT} port!`);
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
   });
 };
