@@ -1,10 +1,6 @@
 import mongoose, { version } from 'mongoose';
 import { getEnvVar } from '../utils/getEnvVar';
 
-const clientOptions = {
-    serverApi: { version: '1', strict: true, deprecationErrors: true },
-};
-
 
 export const initMongoDBConnection = async () => {
     try {
