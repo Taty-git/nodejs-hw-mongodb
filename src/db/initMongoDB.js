@@ -1,6 +1,5 @@
 import mongoose, { version } from 'mongoose';
 import { getEnvVar } from '../utils/getEnvVar';
-import { ENV_VARS } from '../constants/envVars';
 
 const clientOptions = {
     serverApi: { version: '1', strict: true, deprecationErrors: true },
@@ -9,10 +8,10 @@ const clientOptions = {
 
 export const initMongoDBConnection = async () => {
     try {
-        const user = getEnvVar(ENV_VARS.MONGO_DB_USER);
-        const password = getEnvVar(ENV_VARS.MONGO_DB_PASSWORD);
-        const host = getEnvVar(ENV_VARS.MONGO_DB_HOST);
-        const db = getEnvVar(ENV_VARS.MONGO_DB_DATABASE);
+        const user = getEnvVar(MONGO_DB_USER);
+        const password = getEnvVar(MONGO_DB_PASSWORD);
+        const host = getEnvVar(MONGO_DB_HOST);
+        const db = getEnvVar(MONGO_DB_DATABASE);
 
         await mongoose.connect(
             `mongodb+srv://${user}:${pwd}@${url}/${db}?retryWrites=true&w=majority`,
